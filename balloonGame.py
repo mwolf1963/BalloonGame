@@ -1,12 +1,13 @@
 #Author: Matt Wolf
 #Date:3/16/19
 #Description:
-#Attempt a simple ball color match game
+#Attempt a simple balloon color match game
 
 
 #works. need to add logic for score and up coming balls
 #also need to add logic for balls next to balls
 
+#import modules
 import pygame
 import math
 import random
@@ -14,31 +15,45 @@ import random
 
 #init pygame
 pygame.init()
-bg = pygame.image.load('backGround.png')
+bg = pygame.image.load('backGround100.png')
 
 # screen size
 screen_Width = 750
 screen_Height = 500
 
-#refresh
+#refresh clock
 clock = pygame.time.Clock()
 
 #define win as our window
 win = pygame.display.set_mode(( screen_Width,  screen_Height))
 pygame.display.set_caption('Balloon Breaker')
+
+
+# and an add new run to the tracker for balloon list
 fileout = open("outfile.txt", 'a')
 fileout.write("new run" + '_'*48)
 fileout.close()
 
 #logger to check balloon positions
 def logBalloons(balloons):
-    fileout = open("outfile.txt" , 'a')
-    fileout.write('_' *48 + '\n')
-    for item in balloons:
-        fileout.write(str(item.x) + ', ' + str(item.y) + '\n')
-    fileout.close()
+    
+
+    try:    
+        fileout = open("outfile.txt" , 'a')
+        fileout.write('_' *48 + '\n')
+        for item in balloons:
+                    fileout.write(str(item.x) + ', ' + str(item.y) + '\n')
+        fileout.close()
+    except IOError:
+        print('There has been an IOError')
+    except Error as err:
+        print('There has been a file error: ', err)
+	 
+
+
 #balloon for game
-class balloon(object):  
+class balloon(object):
+
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -53,7 +68,10 @@ class balloon(object):
 balloonImage = [pygame.image.load("R1.png"),pygame.image.load("O1.png"),pygame.image.load("Y1.png"),pygame.image.load("B1.png"),
           pygame.image.load("P1.png"),pygame.image.load("G1.png"),pygame.image.load("M1.png")]
 
+
+#variable for which balloons in the list can be called
 balloonRange = 5
+
 #player clock for timing game eventually
 playerClock = 0
 
@@ -163,9 +181,9 @@ while run:
                 if balloons[-1].balloonImage == balloons[aboveIndex].balloonImage:
                     del balloons[-1]
                     del balloons[aboveIndex]
+            logBalloons(balloons)          
             
-            
-    logBalloons(balloons)  
+    
     reDrawGameWindow()
 pygame.quit()
     
