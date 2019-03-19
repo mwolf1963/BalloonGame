@@ -1,5 +1,9 @@
 #Author: Matt Wolf
-#Date:3/16/19
+#Date:3/16/19,
+#3-19 --notes
+#working on adding the logic for game over. needs scores. balloons to come. start screen, instructions
+#pause, level up options etc
+#very rough between classes (or during)
 #Description:
 #Attempt a simple balloon color match game
 
@@ -201,6 +205,14 @@ while run:
                         yVal = balloons[i].y
                         print(yVal)
                         aboveIndex = i
+                if yVal > 323:
+                    gameover = pygame.image.load('game over.png')
+                    restart = False   
+                    while not restart:
+                            print('gameover')
+                            win.blit(gameover, (200,200))
+                            reDrawGameWindow()
+                            
                 i +=1
             print(aboveIndex)
             if not aboveIndex == -1:
