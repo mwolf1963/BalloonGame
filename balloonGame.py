@@ -15,7 +15,16 @@ import random
 
 #init pygame
 pygame.init()
-bg = pygame.image.load('backGround100.png')
+bg100 = pygame.image.load('backGround100.png')
+bg80 = pygame.image.load('backGround80.png')
+bg60 = pygame.image.load('backGround60.png')
+bg40 = pygame.image.load('backGround40.png')
+bg40F = pygame.image.load('backGround40Flash.png')
+bg20 = pygame.image.load('backGround20.png')
+bg20F = pygame.image.load('backGround20Flash.png')
+
+bg = bg40
+
 
 # screen size
 screen_Width = 750
@@ -105,7 +114,7 @@ player.draw(win)
 pygame.display.update()
 while run:
     clock.tick(15)
-    playerClock += .1
+    playerClock += 1
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -117,9 +126,26 @@ while run:
         player.x = 260
         player.y = 388 + BORDER
         playerBall = True
-         
-        
-       
+    print(playerClock , bg)
+    #set bg image
+    if playerClock  >= 0 and playerClock  < 15:
+        bg = bg100
+    elif playerClock > 15 and playerClock  < 30: 
+        bg = bg80         
+    elif playerClock  > 30 and playerClock < 45: 
+        bg = bg60
+    elif playerClock  > 45 and playerClock  < 60: 
+        bg = bg40
+    elif playerClock  > 60 and playerClock  < 80:
+        if playerClock % 5 == 0:
+            bg = bg20F
+        else:
+            bg = bg20
+    elif playerClock > 75 :
+        bg = bg100
+        playerClock = 0
+        player.isFlying = True
+        #add release for ballon here
     keys = pygame.key.get_pressed()
 
 
