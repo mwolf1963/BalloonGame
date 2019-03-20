@@ -19,6 +19,7 @@ import random
 
 #init pygame
 pygame.init()
+#assign all picture variables
 bg100 = pygame.image.load('backGround100.png')
 bg80 = pygame.image.load('backGround80.png')
 bg60 = pygame.image.load('backGround60.png')
@@ -26,7 +27,7 @@ bg40 = pygame.image.load('backGround40.png')
 bg40F = pygame.image.load('backGround40Flash.png')
 bg20 = pygame.image.load('backGround20.png')
 bg20F = pygame.image.load('backGround20Flash.png')
-
+gameover = pygame.image.load('game over.png')
 bg = bg40
 
 
@@ -103,6 +104,8 @@ def reDrawGameWindow():
     player.draw(win)
     for item in balloons:
         item.draw(win)
+    if not restart:
+        win.blit(gameover, (57,50))
     pygame.display.update()
 
 #establish initial variable values
@@ -116,6 +119,7 @@ playerBall = True #
 player = balloon( 260, 400 + BORDER)
 player.draw(win)
 pygame.display.update()
+restart = True
 while run:
     clock.tick(15)
     playerClock += 1
@@ -149,7 +153,7 @@ while run:
         bg = bg100
         playerClock = 0
         player.isFlying = True
-        #add release for ballon here
+        
     keys = pygame.key.get_pressed()
 
 
@@ -205,12 +209,11 @@ while run:
                         yVal = balloons[i].y
                         print(yVal)
                         aboveIndex = i
-                if yVal > 323:
-                    gameover = pygame.image.load('game over.png')
+                if yVal > 323:                 
                     restart = False   
                     while not restart:
-                            print('gameover')
-                            win.blit(gameover, (200,200))
+                            #print('gameover')
+                            
                             reDrawGameWindow()
                             
                 i +=1
