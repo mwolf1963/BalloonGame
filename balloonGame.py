@@ -16,10 +16,19 @@ import pygame
 import math
 import random
 
-
-#init pygame
+#####################################
+#init pygame and window variables
+#####################################
 pygame.init()
-#assign all picture variables
+#refresh clock
+clock = pygame.time.Clock()
+#screen size
+screen_Width = 750
+screen_Height = 500
+#define win as our window
+win = pygame.display.set_mode(( screen_Width,  screen_Height))
+pygame.display.set_caption('Balloon Breaker')
+#assign all pictures variables
 bg100 = pygame.image.load('backGround100.png')
 bg80 = pygame.image.load('backGround80.png')
 bg60 = pygame.image.load('backGround60.png')
@@ -28,31 +37,38 @@ bg40F = pygame.image.load('backGround40Flash.png')
 bg20 = pygame.image.load('backGround20.png')
 bg20F = pygame.image.load('backGround20Flash.png')
 gameover = pygame.image.load('game over.png')
-bg = bg40
-
-
-# screen size
-screen_Width = 750
-screen_Height = 500
-
-#refresh clock
-clock = pygame.time.Clock()
-
-#define win as our window
-win = pygame.display.set_mode(( screen_Width,  screen_Height))
-pygame.display.set_caption('Balloon Breaker')
-
-
-# and an add new run to the tracker for balloon list
+bg = bg100
+###################################################
+# init all variables for game play
+###################################################
+#border width ## not setable constant
+BORDER = 4
+level = 4
+balloons = [] #init the balloon list
+run = True
+playerStep = 64 #based on the size of the picture
+playerBall = True 
+restart = True
+#images for the balloon
+balloonImage = [pygame.image.load("R1.png"),pygame.image.load("O1.png"),pygame.image.load("Y1.png"),pygame.image.load("B1.png"),
+          pygame.image.load("P1.png"),pygame.image.load("G1.png"),pygame.image.load("M1.png")]
+#variable for which balloons in the list can be called
+balloonRange = 5
+#player clock for timing game eventually
+playerClock = 0
+#############################################
+#this is a logger to show the position of all
+#ballons in the sequence after each move
+#############################################
 fileout = open("outfile.txt", 'a')
 fileout.write("new run" + '_'*48)
 fileout.close()
-
 #logger to check balloon positions
 def logBalloons(balloons):
-    
-
-    try:    
+    #takes the balloon list as input
+    #outputs the file outfile.txt
+    #each run of the game is "new run"
+    try:
         fileout = open("outfile.txt" , 'a')
         fileout.write('_' *48 + '\n')
         for item in balloons:
@@ -62,8 +78,6 @@ def logBalloons(balloons):
         print('There has been an IOError')
     except Error as err:
         print('There has been a file error: ', err)
-	 
-
 
 #balloon for game
 class balloon(object):
@@ -78,16 +92,6 @@ class balloon(object):
     def draw(self, win):
          win.blit(self.balloonImage, (self.x , self.y))
 
-#images for the balloon
-balloonImage = [pygame.image.load("R1.png"),pygame.image.load("O1.png"),pygame.image.load("Y1.png"),pygame.image.load("B1.png"),
-          pygame.image.load("P1.png"),pygame.image.load("G1.png"),pygame.image.load("M1.png")]
-
-
-#variable for which balloons in the list can be called
-balloonRange = 5
-
-#player clock for timing game eventually
-playerClock = 0
 
 #setup the  init board function
 def setupBoard(level):
@@ -97,6 +101,7 @@ def setupBoard(level):
     for item in balloons:
         item.draw(win)
     pygame.display.update()
+
 
 #redraw the game window on refresh
 def reDrawGameWindow():
@@ -108,56 +113,22 @@ def reDrawGameWindow():
         win.blit(gameover, (57,50))
     pygame.display.update()
 
-#establish initial variable values
-BORDER = 4
-level = 4
-balloons = [] #init the balloon list
-run = True
-playerStep = 64 #based on the size of the picture
+    
+################################################
+#setup functions
+################################################
 setupBoard(level) #run the setup function
-playerBall = True #
 player = balloon( 260, 400 + BORDER)
 player.draw(win)
 pygame.display.update()
-restart = True
-while run:
-    clock.tick(15)
-    playerClock += 1
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-    
-    if not (playerBall):
-        print("here")
-        player.balloonImage = balloonImage[random.randint(0, balloonRange)]
-        player.x = 260
-        player.y = 388 + BORDER
-        playerBall = True
-    print(playerClock , bg)
-    #set bg image
-    if playerClock  >= 0 and playerClock  < 15:
-        bg = bg100
-    elif playerClock > 15 and playerClock  < 30: 
-        bg = bg80         
-    elif playerClock  > 30 and playerClock < 45: 
-        bg = bg60
-    elif playerClock  > 45 and playerClock  < 60: 
-        bg = bg40
-    elif playerClock  > 60 and playerClock  < 80:
-        if playerClock % 5 == 0:
-            bg = bg20F
-        else:
-            bg = bg20
-    elif playerClock > 75 :
-        bg = bg100
-        playerClock = 0
-        player.isFlying = True
-        
-    keys = pygame.key.get_pressed()
 
 
-     
+###################################################
+#begin game functions
+###################################################
+
+#player move
+def playerMove():
     if keys[pygame.K_LEFT] and player.x > 0+ BORDER:
         allowMove = True
         for item in balloons:
@@ -178,9 +149,54 @@ while run:
         
         if keys[pygame.K_SPACE]:
             player.isFlying = True
-            
 
-    else:
+
+
+
+################################################
+#main game loop
+################################################
+while run:
+    clock.tick(15)
+    playerClock += 1
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+    
+    if not (playerBall):
+        print("here")
+        player.balloonImage = balloonImage[random.randint(0, balloonRange)]
+        player.x = 260
+        player.y = 388 + BORDER
+        playerBall = True
+    #print(playerClock , bg)
+        
+    #set bg image
+    if playerClock  >= 0 and playerClock  < 15:
+        bg = bg100
+    elif playerClock > 15 and playerClock  < 30: 
+        bg = bg80         
+    elif playerClock  > 30 and playerClock < 45: 
+        bg = bg60
+    elif playerClock  > 45 and playerClock  < 60: 
+        bg = bg40
+    elif playerClock  > 60 and playerClock  < 80:
+        if playerClock % 5 == 0:
+            bg = bg20F
+        else:
+            bg = bg20
+    elif playerClock > 75 :
+        bg = bg100
+        playerClock = 0
+        player.isFlying = True
+    #get keys pressed        
+    keys = pygame.key.get_pressed()
+    #if player can move they do
+    if  not player.isFlying:
+        playerMove()        
+
+    if player.isFlying:
         player.stop = BORDER
         largestY = BORDER
         for item in balloons:
