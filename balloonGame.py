@@ -113,7 +113,24 @@ def reDrawGameWindow():
         win.blit(gameover, (57,50))
     pygame.display.update()
 
-    
+
+
+def moveLeft():
+    allowMove = True
+    for item in balloons:
+        if (item.x + playerStep == player.x) and  (item.y + playerStep > player.y):
+            allowMove = False
+    if allowMove:
+        player.x -=  playerStep
+
+def moveRight():
+    allowMove = True
+    for item in balloons:
+        if (item.x  == player.x + playerStep) and  (item.y + playerStep > player.y):
+            allowMove = False
+    if allowMove:
+        player.x += playerStep
+
 ################################################
 #setup functions
 ################################################
@@ -121,36 +138,6 @@ setupBoard(level) #run the setup function
 player = balloon( 260, 400 + BORDER)
 player.draw(win)
 pygame.display.update()
-
-
-###################################################
-#begin game functions
-###################################################
-
-#player move
-def playerMove():
-    if keys[pygame.K_LEFT] and player.x > 0+ BORDER:
-        allowMove = True
-        for item in balloons:
-            if (item.x + playerStep == player.x) and  (item.y + playerStep > player.y):
-                allowMove = False
-        if allowMove:
-            player.x -=  playerStep
-    elif keys[pygame.K_RIGHT] and player.x < 520- playerStep*2:
-        allowMove = True
-        for item in balloons:
-            if (item.x  == player.x + playerStep) and  (item.y + playerStep > player.y):
-                allowMove = False
-        if allowMove:
-            player.x += playerStep
-
-     
-    if not (player.isFlying):
-        
-        if keys[pygame.K_SPACE]:
-            player.isFlying = True
-
-
 
 
 ################################################
@@ -165,14 +152,16 @@ while run:
             run = False
     
     if not (playerBall):
-        print("here")
+        #print("here")
         player.balloonImage = balloonImage[random.randint(0, balloonRange)]
         player.x = 260
         player.y = 388 + BORDER
         playerBall = True
     #print(playerClock , bg)
         
-    #set bg image
+    #set bg image attempted to refactor into a function that would take input of playerClock and
+    #background did not update. and game play was extremely laggy. leave this as part of the
+    #main game loop! 3/24/19
     if playerClock  >= 0 and playerClock  < 15:
         bg = bg100
     elif playerClock > 15 and playerClock  < 30: 
@@ -190,11 +179,18 @@ while run:
         bg = bg100
         playerClock = 0
         player.isFlying = True
+    # leave the above as part of the main game loop
+    
     #get keys pressed        
     keys = pygame.key.get_pressed()
     #if player can move they do
-    if  not player.isFlying:
-        playerMove()        
+    if keys[pygame.K_LEFT] and player.x > 0+ BORDER:
+       moveLeft()
+    elif keys[pygame.K_RIGHT] and player.x < 520- playerStep*2:
+        moveRight()     
+    if not (player.isFlying):        
+        if keys[pygame.K_SPACE]:
+            player.isFlying = True         
 
     if player.isFlying:
         player.stop = BORDER
@@ -225,12 +221,7 @@ while run:
                         yVal = balloons[i].y
                         print(yVal)
                         aboveIndex = i
-                if yVal > 323:                 
-                    restart = False   
-                    while not restart:
-                            #print('gameover')
-                            
-                            reDrawGameWindow()
+               
                             
                 i +=1
             print(aboveIndex)
@@ -238,6 +229,12 @@ while run:
                 if balloons[-1].balloonImage == balloons[aboveIndex].balloonImage:
                     del balloons[-1]
                     del balloons[aboveIndex]
+                elif yVal > 323:                 
+                    restart = False   
+                    while not restart:
+                            #print('gameover')
+                            
+                            reDrawGameWindow()
             logBalloons(balloons)          
             
     
